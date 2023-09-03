@@ -17,18 +17,15 @@ class ColorItem extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(5.0),
         child: Container(
           padding: const EdgeInsets.all(2),
           decoration: BoxDecoration(
-            color: isSelected ? Colors.white70 : Colors.transparent,
+            color: isSelected ? Theme.of(context).dividerColor : Colors.transparent,
             shape: BoxShape.circle,
-            border: Border.all(
-              color: isSelected ? Colors.black : Colors.grey[200]!,
-            ),
           ),
           child: CircleAvatar(
-              radius: isSelected ? 16 : 12, backgroundColor: color),
+              radius: 12, backgroundColor: color),
         ),
       ),
     );

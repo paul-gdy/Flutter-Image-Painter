@@ -46,6 +46,7 @@ class ImagePainter extends StatefulWidget {
     this.onPaintModeChanged,
     this.textDelegate,
     this.showControls = true,
+    this.saveImage,
   }) : super(key: key);
 
   ///Constructor for loading image from network url.
@@ -70,6 +71,7 @@ class ImagePainter extends StatefulWidget {
     TextDelegate? textDelegate,
     bool? controlsAtTop,
     bool? showControls,
+    Function? saveImage,
   }) {
     return ImagePainter._(
       key: key,
@@ -92,6 +94,7 @@ class ImagePainter extends StatefulWidget {
       textDelegate: textDelegate,
       controlsAtTop: controlsAtTop ?? true,
       showControls: showControls ?? true,
+      saveImage: saveImage,
     );
   }
 
@@ -117,6 +120,7 @@ class ImagePainter extends StatefulWidget {
     TextDelegate? textDelegate,
     bool? controlsAtTop,
     bool? showControls,
+    Function? saveImage,
   }) {
     return ImagePainter._(
       key: key,
@@ -139,6 +143,7 @@ class ImagePainter extends StatefulWidget {
       textDelegate: textDelegate,
       controlsAtTop: controlsAtTop ?? true,
       showControls: showControls ?? true,
+      saveImage: saveImage,
     );
   }
 
@@ -164,6 +169,7 @@ class ImagePainter extends StatefulWidget {
     TextDelegate? textDelegate,
     bool? controlsAtTop,
     bool? showControls,
+    Function? saveImage,
   }) {
     return ImagePainter._(
       key: key,
@@ -186,6 +192,7 @@ class ImagePainter extends StatefulWidget {
       textDelegate: textDelegate,
       controlsAtTop: controlsAtTop ?? true,
       showControls: showControls ?? true,
+      saveImage: saveImage,
     );
   }
 
@@ -211,6 +218,7 @@ class ImagePainter extends StatefulWidget {
     TextDelegate? textDelegate,
     bool? controlsAtTop,
     bool? showControls,
+    Function? saveImage,
   }) {
     return ImagePainter._(
       key: key,
@@ -233,6 +241,7 @@ class ImagePainter extends StatefulWidget {
       textDelegate: textDelegate,
       controlsAtTop: controlsAtTop ?? true,
       showControls: showControls ?? true,
+      saveImage: saveImage,
     );
   }
 
@@ -253,6 +262,7 @@ class ImagePainter extends StatefulWidget {
     TextDelegate? textDelegate,
     bool? controlsAtTop,
     bool? showControls,
+    Function? saveImage,
   }) {
     return ImagePainter._(
       key: key,
@@ -272,6 +282,7 @@ class ImagePainter extends StatefulWidget {
       textDelegate: textDelegate,
       controlsAtTop: controlsAtTop ?? true,
       showControls: showControls ?? true,
+      saveImage: saveImage,
     );
   }
 
@@ -345,6 +356,9 @@ class ImagePainter extends StatefulWidget {
 
   ///It will control displaying the Control Bar
   final bool showControls;
+
+  ///Get the image
+  final Function? saveImage;
 
   @override
   ImagePainterState createState() => ImagePainterState();
@@ -496,7 +510,7 @@ class ImagePainterState extends State<ImagePainter> {
           if (widget.controlsAtTop && widget.showControls) _buildControls(),
           Expanded(
             child: FittedBox(
-              alignment: FractionalOffset.center,
+              alignment: FractionalOffset.topCenter,
               child: ClipRect(
                 child: AnimatedBuilder(
                   animation: _controller,
@@ -525,7 +539,7 @@ class ImagePainterState extends State<ImagePainter> {
             ),
           ),
           if (!widget.controlsAtTop && widget.showControls) _buildControls(),
-          SizedBox(height: MediaQuery.of(context).padding.bottom)
+          //SizedBox(height: MediaQuery.of(context).padding.bottom)
         ],
       ),
     );
@@ -572,15 +586,19 @@ class ImagePainterState extends State<ImagePainter> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
+                  icon: const Icon(Icons.save),
+                  onPressed: () => widget.saveImage?.call(),
+                ),
+                IconButton(
                   tooltip: textDelegate.undo,
                   icon: widget.undoIcon ??
-                      Icon(Icons.reply, color: Colors.grey[700]),
+                      Icon(Icons.reply, color: Theme.of(context).dividerColor),
                   onPressed: () => _controller.undo(),
                 ),
                 IconButton(
                   tooltip: textDelegate.clearAllProgress,
                   icon: widget.clearAllIcon ??
-                      Icon(Icons.clear, color: Colors.grey[700]),
+                      Icon(Icons.clear, color: Theme.of(context).dividerColor),
                   onPressed: () => _controller.clear(),
                 ),
               ],
@@ -725,7 +743,7 @@ class ImagePainterState extends State<ImagePainter> {
       enabled: false,
       child: Center(
         child: Wrap(
-          alignment: WrapAlignment.center,
+          alignment: WrapAlignment.start,
           spacing: 10,
           runSpacing: 10,
           children: (widget.colors ?? editorColors).map((color) {
@@ -800,7 +818,7 @@ class ImagePainterState extends State<ImagePainter> {
   Widget _buildControls() {
     return Container(
       padding: const EdgeInsets.all(4),
-      color: Colors.grey[200],
+      color: Theme.of(context).dividerColor.withOpacity(0.2),
       child: Row(
         children: [
           AnimatedBuilder(
@@ -814,7 +832,7 @@ class ImagePainterState extends State<ImagePainter> {
                 shape: ContinuousRectangleBorder(
                   borderRadius: BorderRadius.circular(40),
                 ),
-                icon: Icon(icon, color: Colors.grey[700]),
+                icon: Icon(icon, color: Theme.of(context).dividerColor),
                 itemBuilder: (_) => [_showOptionsRow()],
               );
             },
@@ -830,10 +848,13 @@ class ImagePainterState extends State<ImagePainter> {
                 tooltip: textDelegate.changeColor,
                 icon: widget.colorIcon ??
                     Container(
-                      padding: const EdgeInsets.all(2.0),
+                      padding: const EdgeInsets.all(7.0),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        border: Border.all(color: Colors.grey),
+                        border: Border.all(
+                          color: Theme.of(context).dividerColor,
+                          width: 0.5,
+                        ),
                         color: _controller.color,
                       ),
                     ),
@@ -847,7 +868,7 @@ class ImagePainterState extends State<ImagePainter> {
               borderRadius: BorderRadius.circular(20),
             ),
             icon:
-                widget.brushIcon ?? Icon(Icons.brush, color: Colors.grey[700]),
+                widget.brushIcon ?? Icon(Icons.brush, color: Theme.of(context).dividerColor),
             itemBuilder: (_) => [_showRangeSlider()],
           ),
           AnimatedBuilder(
@@ -863,7 +884,7 @@ class ImagePainterState extends State<ImagePainter> {
                       },
                     ),
                     Text(
-                      'Fill',
+                      textDelegate.fill,
                       style: Theme.of(context).textTheme.bodyMedium,
                     )
                   ],
@@ -875,14 +896,17 @@ class ImagePainterState extends State<ImagePainter> {
           ),
           const Spacer(),
           IconButton(
+            icon: Icon(Icons.save, color: Theme.of(context).dividerColor),
+            onPressed: () => widget.saveImage?.call(),
+          ),
+          IconButton(
             tooltip: textDelegate.undo,
-            icon: widget.undoIcon ?? Icon(Icons.reply, color: Colors.grey[700]),
+            icon: widget.undoIcon ?? Icon(Icons.reply, color: Theme.of(context).dividerColor),
             onPressed: () => _controller.undo(),
           ),
           IconButton(
             tooltip: textDelegate.clearAllProgress,
-            icon: widget.clearAllIcon ??
-                Icon(Icons.clear, color: Colors.grey[700]),
+            icon: widget.clearAllIcon ?? Icon(Icons.clear, color: Theme.of(context).dividerColor),
             onPressed: () => _controller.clear(),
           ),
         ],

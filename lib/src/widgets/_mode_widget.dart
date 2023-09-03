@@ -17,24 +17,21 @@ class SelectionItems extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 2.0),
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(4.0),
-          color: isSelected ? Colors.blue : Colors.transparent),
+          borderRadius: BorderRadius.circular(3.0),
+          color: isSelected ? Theme.of(context).dividerColor.withOpacity(0.2) : Colors.transparent),
       child: ListTile(
         leading: IconTheme(
           data: const IconThemeData(opacity: 1.0),
           child: Icon(
             data.icon,
-            color: isSelected ? Colors.white : Colors.black,
+            color: Theme.of(context).dividerColor,
           ),
         ),
         title: Text(
           data.label,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: isSelected
-                    ? Colors.white
-                    : Theme.of(context).textTheme.bodyLarge?.color,
+                color: Theme.of(context).appBarTheme.foregroundColor,
               ),
         ),
         onTap: onTap,
@@ -51,6 +48,10 @@ List<ModeData> paintModes(TextDelegate textDelegate) => [
           mode: PaintMode.none,
           label: textDelegate.noneZoom),
       ModeData(
+          icon: Icons.edit,
+          mode: PaintMode.freeStyle,
+          label: textDelegate.drawing),
+      ModeData(
           icon: Icons.horizontal_rule,
           mode: PaintMode.line,
           label: textDelegate.line),
@@ -58,10 +59,6 @@ List<ModeData> paintModes(TextDelegate textDelegate) => [
           icon: Icons.crop_free,
           mode: PaintMode.rect,
           label: textDelegate.rectangle),
-      ModeData(
-          icon: Icons.edit,
-          mode: PaintMode.freeStyle,
-          label: textDelegate.drawing),
       ModeData(
           icon: Icons.lens_outlined,
           mode: PaintMode.circle,
@@ -74,10 +71,10 @@ List<ModeData> paintModes(TextDelegate textDelegate) => [
           icon: Icons.power_input,
           mode: PaintMode.dashLine,
           label: textDelegate.dashLine),
-      ModeData(
+      /*ModeData(
           icon: Icons.text_format,
           mode: PaintMode.text,
-          label: textDelegate.text),
+          label: textDelegate.text),*/
     ];
 
 @immutable
