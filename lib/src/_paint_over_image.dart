@@ -47,6 +47,7 @@ class ImagePainter extends StatefulWidget {
     this.textDelegate,
     this.showControls = true,
     this.saveImage,
+    this.openImage,
   }) : super(key: key);
 
   ///Constructor for loading image from network url.
@@ -72,6 +73,7 @@ class ImagePainter extends StatefulWidget {
     bool? controlsAtTop,
     bool? showControls,
     Function? saveImage,
+    Function? openImage,
   }) {
     return ImagePainter._(
       key: key,
@@ -95,6 +97,7 @@ class ImagePainter extends StatefulWidget {
       controlsAtTop: controlsAtTop ?? true,
       showControls: showControls ?? true,
       saveImage: saveImage,
+      openImage: openImage,
     );
   }
 
@@ -121,6 +124,7 @@ class ImagePainter extends StatefulWidget {
     bool? controlsAtTop,
     bool? showControls,
     Function? saveImage,
+    Function? openImage,
   }) {
     return ImagePainter._(
       key: key,
@@ -144,6 +148,7 @@ class ImagePainter extends StatefulWidget {
       controlsAtTop: controlsAtTop ?? true,
       showControls: showControls ?? true,
       saveImage: saveImage,
+      openImage: openImage,
     );
   }
 
@@ -170,6 +175,7 @@ class ImagePainter extends StatefulWidget {
     bool? controlsAtTop,
     bool? showControls,
     Function? saveImage,
+    Function? openImage,
   }) {
     return ImagePainter._(
       key: key,
@@ -193,6 +199,7 @@ class ImagePainter extends StatefulWidget {
       controlsAtTop: controlsAtTop ?? true,
       showControls: showControls ?? true,
       saveImage: saveImage,
+      openImage: openImage,
     );
   }
 
@@ -219,6 +226,7 @@ class ImagePainter extends StatefulWidget {
     bool? controlsAtTop,
     bool? showControls,
     Function? saveImage,
+    Function? openImage,
   }) {
     return ImagePainter._(
       key: key,
@@ -242,6 +250,7 @@ class ImagePainter extends StatefulWidget {
       controlsAtTop: controlsAtTop ?? true,
       showControls: showControls ?? true,
       saveImage: saveImage,
+      openImage: openImage,
     );
   }
 
@@ -263,6 +272,7 @@ class ImagePainter extends StatefulWidget {
     bool? controlsAtTop,
     bool? showControls,
     Function? saveImage,
+    Function? openImage,
   }) {
     return ImagePainter._(
       key: key,
@@ -283,6 +293,7 @@ class ImagePainter extends StatefulWidget {
       controlsAtTop: controlsAtTop ?? true,
       showControls: showControls ?? true,
       saveImage: saveImage,
+      openImage: openImage,
     );
   }
 
@@ -360,6 +371,9 @@ class ImagePainter extends StatefulWidget {
   ///Get the image
   final Function? saveImage;
 
+  ///Open an image
+  final Function? openImage;
+
   @override
   ImagePainterState createState() => ImagePainterState();
 }
@@ -369,7 +383,7 @@ class ImagePainterState extends State<ImagePainter> {
   final _repaintKey = GlobalKey();
   ui.Image? _image;
   late Controller _controller;
-  late final ValueNotifier<bool> _isLoaded;
+  ValueNotifier<bool>? _isLoaded;
   late final TextEditingController _textController;
   late final TransformationController _transformationController;
 
@@ -402,7 +416,8 @@ class ImagePainterState extends State<ImagePainter> {
   @override
   void dispose() {
     _controller.dispose();
-    _isLoaded.dispose();
+    _isLoaded?.dispose();
+    _isLoaded = null;
     _textController.dispose();
     _transformationController.dispose();
     super.dispose();
@@ -446,13 +461,16 @@ class ImagePainterState extends State<ImagePainter> {
         _setStrokeMultiplier();
       }
     } else {
-      _isLoaded.value = true;
+      _isLoaded?.value = true;
     }
   }
 
   ///Dynamically sets stroke multiplier on the basis of widget size.
   ///Implemented to avoid thin stroke on high res images.
   _setStrokeMultiplier() {
+    if(_isLoaded == null) {
+      return;
+    }
     if ((_image!.height + _image!.width) > 1000) {
       _strokeMultiplier = (_image!.height + _image!.width) ~/ 1000;
     }
@@ -463,7 +481,7 @@ class ImagePainterState extends State<ImagePainter> {
   Future<ui.Image> _convertImage(Uint8List img) async {
     final completer = Completer<ui.Image>();
     ui.decodeImageFromList(img, (image) {
-      _isLoaded.value = true;
+      _isLoaded?.value = true;
       return completer.complete(image);
     });
     return completer.future;
@@ -476,28 +494,38 @@ class ImagePainterState extends State<ImagePainter> {
     img.resolve(const ImageConfiguration()).addListener(
         ImageStreamListener((info, _) => completer.complete(info)));
     final imageInfo = await completer.future;
-    _isLoaded.value = true;
+    _isLoaded?.value = true;
     return imageInfo.image;
   }
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<bool>(
-      valueListenable: _isLoaded,
-      builder: (_, loaded, __) {
-        if (loaded) {
-          return widget.isSignature ? _paintSignature() : _paintImage();
-        } else {
-          return Container(
-            height: widget.height ?? double.maxFinite,
-            width: widget.width ?? double.maxFinite,
-            child: Center(
-              child: widget.placeHolder ?? const CircularProgressIndicator(),
-            ),
-          );
-        }
-      },
-    );
+    if(_isLoaded == null) {
+      return Container(
+        height: widget.height ?? double.maxFinite,
+        width: widget.width ?? double.maxFinite,
+        child: Center(
+          child: widget.placeHolder ?? const CircularProgressIndicator(),
+        ),
+      );
+    } else {
+      return ValueListenableBuilder<bool>(
+        valueListenable: _isLoaded!,
+        builder: (_, loaded, __) {
+          if (loaded) {
+            return widget.isSignature ? _paintSignature() : _paintImage();
+          } else {
+            return Container(
+              height: widget.height ?? double.maxFinite,
+              width: widget.width ?? double.maxFinite,
+              child: Center(
+                child: widget.placeHolder ?? const CircularProgressIndicator(),
+              ),
+            );
+          }
+        },
+      );
+    }
   }
 
   ///paints image on given constrains for drawing if image is not null.
@@ -520,7 +548,7 @@ class ImagePainterState extends State<ImagePainter> {
                       maxScale: 2.4,
                       minScale: 1,
                       panEnabled: _controller.mode == PaintMode.none,
-                      scaleEnabled: widget.isScalable!,
+                      scaleEnabled: _controller.mode == PaintMode.none, //widget.isScalable!,
                       onInteractionUpdate: _scaleUpdateGesture,
                       onInteractionEnd: _scaleEndGesture,
                       child: CustomPaint(
@@ -585,10 +613,6 @@ class ImagePainterState extends State<ImagePainter> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                IconButton(
-                  icon: const Icon(Icons.save),
-                  onPressed: () => widget.saveImage?.call(),
-                ),
                 IconButton(
                   tooltip: textDelegate.undo,
                   icon: widget.undoIcon ??
@@ -718,22 +742,19 @@ class ImagePainterState extends State<ImagePainter> {
   PopupMenuItem _showRangeSlider() {
     return PopupMenuItem(
       enabled: false,
-      child: SizedBox(
-        width: double.maxFinite,
-        child: AnimatedBuilder(
-          animation: _controller,
-          builder: (_, __) {
-            return RangedSlider(
-              value: _controller.strokeWidth,
-              onChanged: (value) {
-                _controller.setStrokeWidth(value);
-                if (widget.onStrokeWidthChanged != null) {
-                  widget.onStrokeWidthChanged!(value);
-                }
-              },
-            );
-          },
-        ),
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (_, __) {
+          return RangedSlider(
+            value: _controller.strokeWidth,
+            onChanged: (value) {
+              _controller.setStrokeWidth(value);
+              if (widget.onStrokeWidthChanged != null) {
+                widget.onStrokeWidthChanged!(value);
+              }
+            },
+          );
+        },
       ),
     );
   }
@@ -820,6 +841,7 @@ class ImagePainterState extends State<ImagePainter> {
       padding: const EdgeInsets.all(4),
       color: Theme.of(context).dividerColor.withOpacity(0.2),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           AnimatedBuilder(
             animation: _controller,
@@ -828,11 +850,12 @@ class ImagePainterState extends State<ImagePainter> {
                   .firstWhere((item) => item.mode == _controller.mode)
                   .icon;
               return PopupMenuButton(
+                padding: EdgeInsets.zero,
                 tooltip: textDelegate.changeMode,
-                shape: ContinuousRectangleBorder(
-                  borderRadius: BorderRadius.circular(40),
+                icon: Icon(
+                  icon,
+                  color: Theme.of(context).dividerColor,
                 ),
-                icon: Icon(icon, color: Theme.of(context).dividerColor),
                 itemBuilder: (_) => [_showOptionsRow()],
               );
             },
@@ -840,74 +863,89 @@ class ImagePainterState extends State<ImagePainter> {
           AnimatedBuilder(
             animation: _controller,
             builder: (_, __) {
-              return PopupMenuButton(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                shape: ContinuousRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                tooltip: textDelegate.changeColor,
-                icon: widget.colorIcon ??
-                    Container(
-                      padding: const EdgeInsets.all(7.0),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Theme.of(context).dividerColor,
-                          width: 0.5,
+              return SizedBox(
+                width: 28.0,
+                child: PopupMenuButton(
+                  padding: EdgeInsets.zero,
+                  tooltip: textDelegate.changeColor,
+                  icon: widget.colorIcon ??
+                      Container(
+                        padding: EdgeInsets.all(_controller.strokeWidth / 4 < 4.0 ? 4.0 : _controller.strokeWidth / 4),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Theme.of(context).dividerColor,
+                            width: 0.5,
+                          ),
+                          color: _controller.color,
                         ),
-                        color: _controller.color,
                       ),
-                    ),
-                itemBuilder: (_) => [_showColorPicker()],
+                  itemBuilder: (_) => [
+                    _showRangeSlider(),
+                    _showColorPicker(),
+                  ],
+                ),
               );
             },
           ),
-          PopupMenuButton(
+          /*PopupMenuButton(
+            padding: EdgeInsets.zero,
             tooltip: textDelegate.changeBrushSize,
-            shape: ContinuousRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
             icon:
                 widget.brushIcon ?? Icon(Icons.brush, color: Theme.of(context).dividerColor),
             itemBuilder: (_) => [_showRangeSlider()],
-          ),
+          ),*/
+          if(_controller.canFill())
           AnimatedBuilder(
             animation: _controller,
             builder: (_, __) {
-              if (_controller.canFill()) {
-                return Row(
-                  children: [
-                    Checkbox.adaptive(
+              return Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    width: 28.0,
+                    child: Checkbox.adaptive(
                       value: _controller.shouldFill,
                       onChanged: (val) {
                         _controller.update(fill: val);
                       },
+                      visualDensity: VisualDensity.compact,
                     ),
-                    Text(
-                      textDelegate.fill,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    )
-                  ],
-                );
-              } else {
-                return const SizedBox();
-              }
+                  ),
+                  Text(
+                    textDelegate.fill,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
+              );
             },
           ),
-          const Spacer(),
-          IconButton(
-            icon: Icon(Icons.save, color: Theme.of(context).dividerColor),
-            onPressed: () => widget.saveImage?.call(),
-          ),
+          //const Spacer(),
+          if(widget.openImage != null)
+            IconButton(
+              tooltip: textDelegate.open,
+              icon: Icon(Icons.image, color: Theme.of(context).dividerColor),
+              onPressed: () => widget.openImage?.call(),
+              visualDensity: VisualDensity.compact,
+            ),
+          if(widget.saveImage != null)
+            IconButton(
+              tooltip: textDelegate.save,
+              icon: Icon(Icons.save, color: Theme.of(context).dividerColor),
+              onPressed: () => widget.saveImage?.call(),
+              visualDensity: VisualDensity.compact,
+            ),
           IconButton(
             tooltip: textDelegate.undo,
             icon: widget.undoIcon ?? Icon(Icons.reply, color: Theme.of(context).dividerColor),
             onPressed: () => _controller.undo(),
+            visualDensity: VisualDensity.compact,
           ),
           IconButton(
             tooltip: textDelegate.clearAllProgress,
             icon: widget.clearAllIcon ?? Icon(Icons.clear, color: Theme.of(context).dividerColor),
             onPressed: () => _controller.clear(),
+            visualDensity: VisualDensity.compact,
           ),
         ],
       ),

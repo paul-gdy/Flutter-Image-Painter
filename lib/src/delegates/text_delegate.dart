@@ -14,4 +14,6 @@ class TextDelegate {
   final String done = "Done";
   final String clearAllProgress = "Clear All Progress";
   final String fill = "Fill";
+  final String save = "Save";
+  final String open = "Open";
 }
