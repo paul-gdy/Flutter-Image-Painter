@@ -45,4 +45,10 @@ class DutchTextDelegate implements TextDelegate {
 
   @override
   final String fill = "Fill";
+
+  @override
+  final String save = "Save";
+
+  @override
+  final String open = "Open";
 }

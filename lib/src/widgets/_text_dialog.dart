@@ -65,7 +65,6 @@ class TextDialog extends StatelessWidget {
                 textDelegate.done,
                 style: const TextStyle(
                   color: Colors.white,
-                  fontWeight: FontWeight.bold,
                 ),
               ),
               onPressed: onFinished,

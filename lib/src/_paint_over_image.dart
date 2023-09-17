@@ -895,29 +895,33 @@ class ImagePainterState extends State<ImagePainter> {
                 widget.brushIcon ?? Icon(Icons.brush, color: Theme.of(context).dividerColor),
             itemBuilder: (_) => [_showRangeSlider()],
           ),*/
-          if(_controller.canFill())
+          
           AnimatedBuilder(
             animation: _controller,
             builder: (_, __) {
-              return Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(
-                    width: 28.0,
-                    child: Checkbox.adaptive(
-                      value: _controller.shouldFill,
-                      onChanged: (val) {
-                        _controller.update(fill: val);
-                      },
-                      visualDensity: VisualDensity.compact,
+              if(_controller.canFill()) {
+                return Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      width: 28.0,
+                      child: Checkbox.adaptive(
+                        value: _controller.shouldFill,
+                        onChanged: (val) {
+                          _controller.update(fill: val);
+                        },
+                        visualDensity: VisualDensity.compact,
+                      ),
                     ),
-                  ),
-                  Text(
-                    textDelegate.fill,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                ],
-              );
+                    Text(
+                      textDelegate.fill,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ],
+                );
+              } else {
+                return Container();
+              }
             },
           ),
           //const Spacer(),
