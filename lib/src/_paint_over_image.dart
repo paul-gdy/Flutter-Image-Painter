@@ -691,11 +691,13 @@ class ImagePainterState extends State<ImagePainter> {
       _controller.addOffsets(null);
       _addFreeStylePoints();
       _controller.offsets.clear();
+      widget.saveImage?.call();
     } else if (_controller.start != null &&
         _controller.end != null &&
         _controller.mode != PaintMode.text &&
         _controller.mode != PaintMode.image) {
       _addEndPoints();
+      widget.saveImage?.call();
     } else if(_controller.mode == PaintMode.text ||
         _controller.mode == PaintMode.image) {
           widget.saveImage?.call();
@@ -835,7 +837,7 @@ class ImagePainterState extends State<ImagePainter> {
   void _addPaintHistory(PaintInfo info) {
     if (info.mode != PaintMode.none) {
       _controller.addPaintInfo(info);
-      widget.saveImage?.call();
+      //widget.saveImage?.call();
     }
   }
 
