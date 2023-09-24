@@ -11,6 +11,7 @@ import '_image_painter.dart';
 import '_signature_painter.dart';
 import 'delegates/text_delegate.dart';
 import 'widgets/_color_widget.dart';
+import 'widgets/_image_dialog.dart';
 import 'widgets/_mode_widget.dart';
 import 'widgets/_range_slider.dart';
 import 'widgets/_text_dialog.dart';
@@ -48,6 +49,7 @@ class ImagePainter extends StatefulWidget {
     this.showControls = true,
     this.saveImage,
     this.openImage,
+    this.images,
   }) : super(key: key);
 
   ///Constructor for loading image from network url.
@@ -74,6 +76,7 @@ class ImagePainter extends StatefulWidget {
     bool? showControls,
     Function? saveImage,
     Function? openImage,
+    List<String>? images,
   }) {
     return ImagePainter._(
       key: key,
@@ -98,6 +101,7 @@ class ImagePainter extends StatefulWidget {
       showControls: showControls ?? true,
       saveImage: saveImage,
       openImage: openImage,
+      images: images,
     );
   }
 
@@ -125,6 +129,7 @@ class ImagePainter extends StatefulWidget {
     bool? showControls,
     Function? saveImage,
     Function? openImage,
+    List<String>? images,
   }) {
     return ImagePainter._(
       key: key,
@@ -149,6 +154,7 @@ class ImagePainter extends StatefulWidget {
       showControls: showControls ?? true,
       saveImage: saveImage,
       openImage: openImage,
+      images: images,
     );
   }
 
@@ -176,6 +182,7 @@ class ImagePainter extends StatefulWidget {
     bool? showControls,
     Function? saveImage,
     Function? openImage,
+    List<String>? images,
   }) {
     return ImagePainter._(
       key: key,
@@ -200,6 +207,7 @@ class ImagePainter extends StatefulWidget {
       showControls: showControls ?? true,
       saveImage: saveImage,
       openImage: openImage,
+      images: images,
     );
   }
 
@@ -227,6 +235,7 @@ class ImagePainter extends StatefulWidget {
     bool? showControls,
     Function? saveImage,
     Function? openImage,
+    List<String>? images,
   }) {
     return ImagePainter._(
       key: key,
@@ -251,6 +260,7 @@ class ImagePainter extends StatefulWidget {
       showControls: showControls ?? true,
       saveImage: saveImage,
       openImage: openImage,
+      images: images,
     );
   }
 
@@ -273,6 +283,7 @@ class ImagePainter extends StatefulWidget {
     bool? showControls,
     Function? saveImage,
     Function? openImage,
+    List<String>? images,
   }) {
     return ImagePainter._(
       key: key,
@@ -294,6 +305,7 @@ class ImagePainter extends StatefulWidget {
       showControls: showControls ?? true,
       saveImage: saveImage,
       openImage: openImage,
+      images: images,
     );
   }
 
@@ -373,6 +385,9 @@ class ImagePainter extends StatefulWidget {
 
   ///Open an image
   final Function? openImage;
+
+  ///Images
+  final List<String>? images;
 
   @override
   ImagePainterState createState() => ImagePainterState();
@@ -658,6 +673,11 @@ class ImagePainterState extends State<ImagePainter> {
           .lastWhere((element) => element.mode == PaintMode.text)
           .offsets = [_zoomAdjustedOffset];
     }
+    if (_controller.onImageUpdateMode) {
+      _controller.paintHistory
+          .lastWhere((element) => element.mode == PaintMode.image)
+          .offsets = [_zoomAdjustedOffset];
+    }
   }
 
   ///Fires when user stops interacting with the screen.
@@ -671,7 +691,8 @@ class ImagePainterState extends State<ImagePainter> {
       _controller.offsets.clear();
     } else if (_controller.start != null &&
         _controller.end != null &&
-        _controller.mode != PaintMode.text) {
+        _controller.mode != PaintMode.text &&
+        _controller.mode != PaintMode.image) {
       _addEndPoints();
     }
     _controller.resetStartAndEnd();
@@ -728,6 +749,9 @@ class ImagePainterState extends State<ImagePainter> {
                       Navigator.of(context).pop();
                       if (item.mode == PaintMode.text) {
                         _openTextDialog();
+                      }
+                      if (item.mode == PaintMode.image) {
+                        _openImageDialog();
                       }
                     },
                   ),
@@ -834,6 +858,44 @@ class ImagePainterState extends State<ImagePainter> {
         Navigator.of(context).pop();
       },
     );
+  }
+
+  void _openImageDialog() {
+    _controller.setMode(PaintMode.image);
+    if(widget.images != null && widget.images!.isNotEmpty) {
+      ImageDialog.show(
+        context,
+        images: widget.images!,
+        textDelegate: textDelegate,
+        onFinished: (path, size) {
+          if(path.isNotEmpty) {
+            rootBundle.load(path).then((assetImageByteData) {
+              ui.instantiateImageCodec(
+                assetImageByteData.buffer.asUint8List(),
+                targetWidth: size,
+              ).then((codec) {
+                codec.getNextFrame().then((frame) {
+                  final ui.Image image = frame.image;
+                  _addPaintHistory(
+                    PaintInfo(
+                      mode: PaintMode.image,
+                      image: image,
+                      offsets: [],
+                      color: _controller.color,
+                      strokeWidth: _controller.scaledStrokeWidth,
+                    ),
+                  );
+                  Navigator.of(context).pop();
+                });
+              });
+            });
+          } else {
+            Navigator.of(context).pop();
+          }
+          
+        },
+      );
+    }
   }
 
   Widget _buildControls() {

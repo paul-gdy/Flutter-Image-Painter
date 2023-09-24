@@ -1,13 +1,12 @@
-import 'dart:ui';
-
-import 'package:flutter/material.dart' hide Image;
+import 'dart:ui' as ui;
+import 'package:flutter/material.dart';
 
 import '_controller.dart';
 
 ///Handles all the painting ongoing on the canvas.
 class DrawImage extends CustomPainter {
   ///Converted image from [ImagePainter] constructor.
-  final Image? image;
+  final ui.Image? image;
 
   ///Flag for triggering signature mode.
   final bool isSignature;
@@ -87,7 +86,7 @@ class DrawImage extends CustomPainter {
                 ..lineTo(_offset[i + 1]!.dx, _offset[i + 1]!.dy);
               canvas.drawPath(_path, _painter..strokeCap = StrokeCap.round);
             } else if (_offset[i] != null && _offset[i + 1] == null) {
-              canvas.drawPoints(PointMode.points, [_offset[i]!],
+              canvas.drawPoints(ui.PointMode.points, [_offset[i]!],
                   _painter..strokeCap = StrokeCap.round);
             }
           }
@@ -113,6 +112,20 @@ class DrawImage extends CustomPainter {
               : Offset(_offset[0]!.dx - textPainter.width / 2,
                   _offset[0]!.dy - textPainter.height / 2);
           textPainter.paint(canvas, textOffset);
+          break;
+        case PaintMode.image:
+          if(item.image != null) {
+            final off = _offset.isEmpty
+              ? Offset(size.width / 2 - item.image!.width / 2,
+                  size.height / 2 - item.image!.height / 2,)
+              : Offset(_offset[0]!.dx - item.image!.width / 2,
+                  _offset[0]!.dy - item.image!.height / 2,);
+            canvas.drawImage(
+              item.image!,
+              off,
+              Paint(),
+            );
+          }
           break;
         default:
       }
@@ -154,7 +167,7 @@ class DrawImage extends CustomPainter {
                   Offset(points[i + 1]!.dx, points[i + 1]!.dy),
                   _paint..strokeCap = StrokeCap.round);
             } else if (points[i] != null && points[i + 1] == null) {
-              canvas.drawPoints(PointMode.points,
+              canvas.drawPoints(ui.PointMode.points,
                   [Offset(points[i]!.dx, points[i]!.dy)], _paint);
             }
           }
@@ -237,7 +250,9 @@ enum PaintMode {
   circle,
 
   ///Allows to draw dashed line between two point.
-  dashLine
+  dashLine,
+
+  image,
 }
 
 ///[PaintInfo] keeps track of a single unit of shape, whichever selected.
@@ -257,6 +272,9 @@ class PaintInfo {
 
   ///Used to save text in case of text type.
   String text;
+
+  /// Image
+  ui.Image? image;
 
   //To determine whether the drawn shape is filled or not.
   bool fill;
@@ -281,6 +299,7 @@ class PaintInfo {
     required this.color,
     required this.strokeWidth,
     this.text = '',
+    this.image,
     this.fill = false,
   });
 }

@@ -6,6 +6,7 @@ class TextDelegate {
   final String circle = "Circle";
   final String arrow = "Arrow";
   final String dashLine = "Dash line";
+  final String image = "Image";
   final String text = "Text";
   final String changeMode = "Change Mode";
   final String changeColor = "Change Color";

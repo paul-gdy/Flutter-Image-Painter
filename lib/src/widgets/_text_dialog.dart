@@ -49,7 +49,7 @@ class TextDialog extends StatelessWidget {
             autofocus: true,
             style: TextStyle(
               fontSize: fontSize,
-              fontWeight: FontWeight.bold,
+              //fontWeight: FontWeight.bold,
               color: color,
             ),
             textAlign: TextAlign.center,
@@ -57,14 +57,18 @@ class TextDialog extends StatelessWidget {
               contentPadding: EdgeInsets.symmetric(horizontal: 10),
               border: InputBorder.none,
             ),
+            autocorrect: false,
+            enableSuggestions: false,
+            textInputAction: TextInputAction.done,
+            onEditingComplete: onFinished,
           ),
           Align(
             alignment: Alignment.bottomRight,
             child: TextButton(
               child: Text(
                 textDelegate.done,
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: Theme.of(context).primaryColorLight,
                 ),
               ),
               onPressed: onFinished,

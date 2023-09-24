@@ -48,6 +48,12 @@ class Controller extends ChangeNotifier {
       _paintHistory
           .where((element) => element.mode == PaintMode.text)
           .isNotEmpty;
+  
+  bool get onImageUpdateMode =>
+      _mode == PaintMode.image &&
+      _paintHistory
+          .where((element) => element.mode == PaintMode.image)
+          .isNotEmpty;
 
   Controller({
     double strokeWidth = 4.0,

@@ -23,6 +23,9 @@ class DutchTextDelegate implements TextDelegate {
   String get dashLine => "Dashlane";
 
   @override
+  String get image => "Image";
+
+  @override
   String get done => "Gedaan";
 
   @override
