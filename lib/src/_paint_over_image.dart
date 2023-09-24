@@ -672,11 +672,13 @@ class ImagePainterState extends State<ImagePainter> {
       _controller.paintHistory
           .lastWhere((element) => element.mode == PaintMode.text)
           .offsets = [_zoomAdjustedOffset];
+      widget.saveImage?.call();
     }
     if (_controller.onImageUpdateMode) {
       _controller.paintHistory
           .lastWhere((element) => element.mode == PaintMode.image)
           .offsets = [_zoomAdjustedOffset];
+      widget.saveImage?.call();
     }
   }
 
@@ -830,6 +832,7 @@ class ImagePainterState extends State<ImagePainter> {
   void _addPaintHistory(PaintInfo info) {
     if (info.mode != PaintMode.none) {
       _controller.addPaintInfo(info);
+      widget.saveImage?.call();
     }
   }
 
@@ -994,6 +997,7 @@ class ImagePainterState extends State<ImagePainter> {
               onPressed: () => widget.openImage?.call(),
               visualDensity: VisualDensity.compact,
             ),
+          /*
           if(widget.saveImage != null)
             IconButton(
               tooltip: textDelegate.save,
@@ -1001,6 +1005,7 @@ class ImagePainterState extends State<ImagePainter> {
               onPressed: () => widget.saveImage?.call(),
               visualDensity: VisualDensity.compact,
             ),
+          */
           IconButton(
             tooltip: textDelegate.undo,
             icon: widget.undoIcon ?? Icon(Icons.reply, color: Theme.of(context).dividerColor),
