@@ -672,13 +672,13 @@ class ImagePainterState extends State<ImagePainter> {
       _controller.paintHistory
           .lastWhere((element) => element.mode == PaintMode.text)
           .offsets = [_zoomAdjustedOffset];
-      widget.saveImage?.call();
+      //widget.saveImage?.call();
     }
     if (_controller.onImageUpdateMode) {
       _controller.paintHistory
           .lastWhere((element) => element.mode == PaintMode.image)
           .offsets = [_zoomAdjustedOffset];
-      widget.saveImage?.call();
+      //widget.saveImage?.call();
     }
   }
 
@@ -696,7 +696,10 @@ class ImagePainterState extends State<ImagePainter> {
         _controller.mode != PaintMode.text &&
         _controller.mode != PaintMode.image) {
       _addEndPoints();
-    }
+    } else if(_controller.mode == PaintMode.text ||
+        _controller.mode == PaintMode.image) {
+          widget.saveImage?.call();
+        }
     _controller.resetStartAndEnd();
   }
 
@@ -870,6 +873,7 @@ class ImagePainterState extends State<ImagePainter> {
         context,
         images: widget.images!,
         textDelegate: textDelegate,
+        refWidth: _image!.width,
         onFinished: (path, size) {
           if(path.isNotEmpty) {
             rootBundle.load(path).then((assetImageByteData) {
