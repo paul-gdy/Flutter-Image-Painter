@@ -672,13 +672,11 @@ class ImagePainterState extends State<ImagePainter> {
       _controller.paintHistory
           .lastWhere((element) => element.mode == PaintMode.text)
           .offsets = [_zoomAdjustedOffset];
-      //widget.saveImage?.call();
     }
     if (_controller.onImageUpdateMode) {
       _controller.paintHistory
           .lastWhere((element) => element.mode == PaintMode.image)
           .offsets = [_zoomAdjustedOffset];
-      //widget.saveImage?.call();
     }
   }
 
@@ -691,16 +689,13 @@ class ImagePainterState extends State<ImagePainter> {
       _controller.addOffsets(null);
       _addFreeStylePoints();
       _controller.offsets.clear();
-      widget.saveImage?.call();
     } else if (_controller.start != null &&
         _controller.end != null &&
         _controller.mode != PaintMode.text &&
         _controller.mode != PaintMode.image) {
       _addEndPoints();
-      widget.saveImage?.call();
     } else if(_controller.mode == PaintMode.text ||
         _controller.mode == PaintMode.image) {
-          widget.saveImage?.call();
         }
     _controller.resetStartAndEnd();
   }
@@ -837,7 +832,6 @@ class ImagePainterState extends State<ImagePainter> {
   void _addPaintHistory(PaintInfo info) {
     if (info.mode != PaintMode.none) {
       _controller.addPaintInfo(info);
-      //widget.saveImage?.call();
     }
   }
 
@@ -1003,7 +997,6 @@ class ImagePainterState extends State<ImagePainter> {
               onPressed: () => widget.openImage?.call(),
               visualDensity: VisualDensity.compact,
             ),
-          /*
           if(widget.saveImage != null)
             IconButton(
               tooltip: textDelegate.save,
@@ -1011,19 +1004,20 @@ class ImagePainterState extends State<ImagePainter> {
               onPressed: () => widget.saveImage?.call(),
               visualDensity: VisualDensity.compact,
             ),
-          */
           IconButton(
             tooltip: textDelegate.undo,
             icon: widget.undoIcon ?? Icon(Icons.reply, color: Theme.of(context).dividerColor),
             onPressed: () => _controller.undo(),
             visualDensity: VisualDensity.compact,
           ),
+          /*
           IconButton(
             tooltip: textDelegate.clearAllProgress,
             icon: widget.clearAllIcon ?? Icon(Icons.clear, color: Theme.of(context).dividerColor),
             onPressed: () => _controller.clear(),
             visualDensity: VisualDensity.compact,
           ),
+          */
         ],
       ),
     );
