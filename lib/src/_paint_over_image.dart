@@ -52,6 +52,7 @@ class ImagePainter extends StatefulWidget {
     this.images,
     this.drawers = false,
     this.scaffold,
+    this.customIcon,
   }) : super(key: key);
 
   ///Constructor for loading image from network url.
@@ -81,6 +82,7 @@ class ImagePainter extends StatefulWidget {
     List<String>? images,
     bool drawers = false,
     GlobalKey<ScaffoldState>? scaffold,
+    Widget? customIcon
   }) {
     return ImagePainter._(
       key: key,
@@ -108,6 +110,7 @@ class ImagePainter extends StatefulWidget {
       images: images,
       drawers: drawers,
       scaffold: scaffold,
+      customIcon: customIcon,
     );
   }
 
@@ -138,6 +141,7 @@ class ImagePainter extends StatefulWidget {
     List<String>? images,
     bool drawers = false,
     GlobalKey<ScaffoldState>? scaffold,
+    Widget? customIcon
   }) {
     return ImagePainter._(
       key: key,
@@ -165,6 +169,7 @@ class ImagePainter extends StatefulWidget {
       images: images,
       drawers: drawers,
       scaffold: scaffold,
+      customIcon: customIcon,
     );
   }
 
@@ -195,6 +200,7 @@ class ImagePainter extends StatefulWidget {
     List<String>? images,
     bool drawers = false,
     GlobalKey<ScaffoldState>? scaffold,
+    Widget? customIcon
   }) {
     return ImagePainter._(
       key: key,
@@ -222,6 +228,7 @@ class ImagePainter extends StatefulWidget {
       images: images,
       drawers: drawers,
       scaffold: scaffold,
+      customIcon: customIcon,
     );
   }
 
@@ -252,6 +259,7 @@ class ImagePainter extends StatefulWidget {
     List<String>? images,
     bool drawers = false,
     GlobalKey<ScaffoldState>? scaffold,
+    Widget? customIcon
   }) {
     return ImagePainter._(
       key: key,
@@ -279,6 +287,7 @@ class ImagePainter extends StatefulWidget {
       images: images,
       drawers: drawers,
       scaffold: scaffold,
+      customIcon: customIcon,
     );
   }
 
@@ -304,6 +313,7 @@ class ImagePainter extends StatefulWidget {
     List<String>? images,
     bool drawers = false,
     GlobalKey<ScaffoldState>? scaffold,
+    Widget? customIcon,
   }) {
     return ImagePainter._(
       key: key,
@@ -328,6 +338,7 @@ class ImagePainter extends StatefulWidget {
       images: images,
       drawers: drawers,
       scaffold: scaffold,
+      customIcon: customIcon,
     );
   }
 
@@ -416,6 +427,9 @@ class ImagePainter extends StatefulWidget {
 
   ///For drawers
   final GlobalKey<ScaffoldState>? scaffold;
+
+  ///Custom button
+  final Widget? customIcon;
 
   @override
   ImagePainterState createState() => ImagePainterState();
@@ -923,7 +937,6 @@ class ImagePainterState extends State<ImagePainter> {
           } else {
             Navigator.of(context).pop();
           }
-          
         },
       );
     }
@@ -1049,6 +1062,11 @@ class ImagePainterState extends State<ImagePainter> {
                     ]
                   ),
                 ),
+
+                if(widget.customIcon != null)
+                  Expanded(
+                    child: widget.customIcon!,
+                  ),
                 if(widget.drawers)
                   Expanded(
                     child: IconButton(
