@@ -50,6 +50,8 @@ class ImagePainter extends StatefulWidget {
     this.saveImage,
     this.openImage,
     this.images,
+    this.drawers = false,
+    this.scaffold,
   }) : super(key: key);
 
   ///Constructor for loading image from network url.
@@ -77,6 +79,8 @@ class ImagePainter extends StatefulWidget {
     Function? saveImage,
     Function? openImage,
     List<String>? images,
+    bool drawers = false,
+    GlobalKey<ScaffoldState>? scaffold,
   }) {
     return ImagePainter._(
       key: key,
@@ -102,6 +106,8 @@ class ImagePainter extends StatefulWidget {
       saveImage: saveImage,
       openImage: openImage,
       images: images,
+      drawers: drawers,
+      scaffold: scaffold,
     );
   }
 
@@ -130,6 +136,8 @@ class ImagePainter extends StatefulWidget {
     Function? saveImage,
     Function? openImage,
     List<String>? images,
+    bool drawers = false,
+    GlobalKey<ScaffoldState>? scaffold,
   }) {
     return ImagePainter._(
       key: key,
@@ -155,6 +163,8 @@ class ImagePainter extends StatefulWidget {
       saveImage: saveImage,
       openImage: openImage,
       images: images,
+      drawers: drawers,
+      scaffold: scaffold,
     );
   }
 
@@ -183,6 +193,8 @@ class ImagePainter extends StatefulWidget {
     Function? saveImage,
     Function? openImage,
     List<String>? images,
+    bool drawers = false,
+    GlobalKey<ScaffoldState>? scaffold,
   }) {
     return ImagePainter._(
       key: key,
@@ -208,6 +220,8 @@ class ImagePainter extends StatefulWidget {
       saveImage: saveImage,
       openImage: openImage,
       images: images,
+      drawers: drawers,
+      scaffold: scaffold,
     );
   }
 
@@ -236,6 +250,8 @@ class ImagePainter extends StatefulWidget {
     Function? saveImage,
     Function? openImage,
     List<String>? images,
+    bool drawers = false,
+    GlobalKey<ScaffoldState>? scaffold,
   }) {
     return ImagePainter._(
       key: key,
@@ -261,6 +277,8 @@ class ImagePainter extends StatefulWidget {
       saveImage: saveImage,
       openImage: openImage,
       images: images,
+      drawers: drawers,
+      scaffold: scaffold,
     );
   }
 
@@ -284,6 +302,8 @@ class ImagePainter extends StatefulWidget {
     Function? saveImage,
     Function? openImage,
     List<String>? images,
+    bool drawers = false,
+    GlobalKey<ScaffoldState>? scaffold,
   }) {
     return ImagePainter._(
       key: key,
@@ -306,6 +326,8 @@ class ImagePainter extends StatefulWidget {
       saveImage: saveImage,
       openImage: openImage,
       images: images,
+      drawers: drawers,
+      scaffold: scaffold,
     );
   }
 
@@ -388,6 +410,12 @@ class ImagePainter extends StatefulWidget {
 
   ///Images
   final List<String>? images;
+
+  ///Drawers icon
+  final bool drawers;
+
+  ///For drawers
+  final GlobalKey<ScaffoldState>? scaffold;
 
   @override
   ImagePainterState createState() => ImagePainterState();
@@ -902,123 +930,140 @@ class ImagePainterState extends State<ImagePainter> {
   }
 
   Widget _buildControls() {
-    return Container(
-      padding: const EdgeInsets.all(4),
-      color: Theme.of(context).dividerColor.withOpacity(0.2),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          AnimatedBuilder(
-            animation: _controller,
-            builder: (_, __) {
-              final icon = paintModes(textDelegate)
-                  .firstWhere((item) => item.mode == _controller.mode)
-                  .icon;
-              return PopupMenuButton(
-                padding: EdgeInsets.zero,
-                tooltip: textDelegate.changeMode,
-                icon: Icon(
-                  icon,
-                  color: Theme.of(context).dividerColor,
-                ),
-                itemBuilder: (_) => [_showOptionsRow()],
-              );
-            },
-          ),
-          AnimatedBuilder(
-            animation: _controller,
-            builder: (_, __) {
-              return SizedBox(
-                width: 28.0,
-                child: PopupMenuButton(
-                  padding: EdgeInsets.zero,
-                  tooltip: textDelegate.changeColor,
-                  icon: widget.colorIcon ??
-                      Container(
-                        padding: EdgeInsets.all(_controller.strokeWidth / 4 < 4.0 ? 4.0 : _controller.strokeWidth / 4),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Theme.of(context).dividerColor,
-                            width: 0.5,
-                          ),
-                          color: _controller.color,
+    return SafeArea(
+      top: widget.drawers,
+      bottom: false,
+      minimum: EdgeInsets.only(
+        left: 4.0, right: 4.0, bottom: 4.0,
+        top: widget.drawers ? 4.0 : 0.0,
+      ),
+      child: Container(
+        color: Theme.of(context).appBarTheme.foregroundColor,
+        child: AnimatedBuilder(
+          animation: _controller,
+          builder: (_, __) {
+            final icon = paintModes(textDelegate)
+              .firstWhere((item) => item.mode == _controller.mode)
+              .icon;
+
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                if(widget.drawers)
+                  Expanded(
+                    flex: 2,
+                    child: IconButton(
+                      icon: const Icon(Icons.menu),
+                      iconSize: 26.0,
+                      onPressed: () {
+                        widget.scaffold?.currentState?.openDrawer();
+                        FocusManager.instance.primaryFocus?.unfocus(); // to hide the keybord
+                      },
+                    ),
+                  ),
+                Expanded(
+                  flex: 12,
+                  child: Wrap(
+                    spacing: 20.0,
+                    children: [
+                      PopupMenuButton(
+                        padding: EdgeInsets.zero,
+                        tooltip: textDelegate.changeMode,
+                        icon: Icon(
+                          icon,
+                          color: Theme.of(context).dividerColor,
+                        ),
+                        itemBuilder: (_) => [_showOptionsRow()],
+                      ),
+                      SizedBox(
+                        width: 28.0,
+                        child: PopupMenuButton(
+                          padding: EdgeInsets.zero,
+                          tooltip: textDelegate.changeColor,
+                          icon: widget.colorIcon ??
+                              Container(
+                                padding: EdgeInsets.all(_controller.strokeWidth / 4 < 4.0 ? 4.0 : _controller.strokeWidth / 4),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Theme.of(context).dividerColor,
+                                    width: 0.5,
+                                  ),
+                                  color: _controller.color,
+                                ),
+                              ),
+                          itemBuilder: (_) => [
+                            _showRangeSlider(),
+                            _showColorPicker(),
+                          ],
                         ),
                       ),
-                  itemBuilder: (_) => [
-                    _showRangeSlider(),
-                    _showColorPicker(),
-                  ],
-                ),
-              );
-            },
-          ),
-          /*PopupMenuButton(
-            padding: EdgeInsets.zero,
-            tooltip: textDelegate.changeBrushSize,
-            icon:
-                widget.brushIcon ?? Icon(Icons.brush, color: Theme.of(context).dividerColor),
-            itemBuilder: (_) => [_showRangeSlider()],
-          ),*/
-          
-          AnimatedBuilder(
-            animation: _controller,
-            builder: (_, __) {
-              if(_controller.canFill()) {
-                return Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(
-                      width: 28.0,
-                      child: Checkbox.adaptive(
-                        value: _controller.shouldFill,
-                        onChanged: (val) {
-                          _controller.update(fill: val);
-                        },
+                      if(_controller.canFill())
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SizedBox(
+                              width: 28.0,
+                              child: Checkbox.adaptive(
+                                value: _controller.shouldFill,
+                                onChanged: (val) {
+                                  _controller.update(fill: val);
+                                },
+                                visualDensity: VisualDensity.compact,
+                              ),
+                            ),
+                            Text(
+                              textDelegate.fill,
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                          ],
+                        ),
+                      if(widget.openImage != null)
+                        IconButton(
+                          tooltip: textDelegate.open,
+                          icon: Icon(Icons.image, color: Theme.of(context).dividerColor),
+                          onPressed: () => widget.openImage?.call(),
+                          visualDensity: VisualDensity.compact,
+                        ),
+                      IconButton(
+                        tooltip: textDelegate.undo,
+                        icon: widget.undoIcon ?? Icon(Icons.reply, color: Theme.of(context).dividerColor),
+                        onPressed: () => _controller.undo(),
                         visualDensity: VisualDensity.compact,
                       ),
+                      /*
+                      IconButton(
+                        tooltip: textDelegate.clearAllProgress,
+                        icon: widget.clearAllIcon ?? Icon(Icons.clear, color: Theme.of(context).dividerColor),
+                        onPressed: () => _controller.clear(),
+                        visualDensity: VisualDensity.compact,
+                      ),
+                      */
+                      if(widget.saveImage != null)
+                        IconButton(
+                          tooltip: textDelegate.save,
+                          icon: Icon(Icons.save, color: Theme.of(context).dividerColor),
+                          onPressed: () => widget.saveImage?.call(),
+                          visualDensity: VisualDensity.compact,
+                        ),
+                    ]
+                  ),
+                ),
+                if(widget.drawers)
+                  Expanded(
+                    child: IconButton(
+                      icon: const Icon(Icons.more_vert),
+                      iconSize: 26.0,
+                      onPressed: () {
+                        widget.scaffold?.currentState?.openEndDrawer();
+                        FocusManager.instance.primaryFocus?.unfocus(); // to hide the keybord
+                      },
                     ),
-                    Text(
-                      textDelegate.fill,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  ],
-                );
-              } else {
-                return Container();
-              }
-            },
-          ),
-          //const Spacer(),
-          if(widget.openImage != null)
-            IconButton(
-              tooltip: textDelegate.open,
-              icon: Icon(Icons.image, color: Theme.of(context).dividerColor),
-              onPressed: () => widget.openImage?.call(),
-              visualDensity: VisualDensity.compact,
-            ),
-          if(widget.saveImage != null)
-            IconButton(
-              tooltip: textDelegate.save,
-              icon: Icon(Icons.save, color: Theme.of(context).dividerColor),
-              onPressed: () => widget.saveImage?.call(),
-              visualDensity: VisualDensity.compact,
-            ),
-          IconButton(
-            tooltip: textDelegate.undo,
-            icon: widget.undoIcon ?? Icon(Icons.reply, color: Theme.of(context).dividerColor),
-            onPressed: () => _controller.undo(),
-            visualDensity: VisualDensity.compact,
-          ),
-          /*
-          IconButton(
-            tooltip: textDelegate.clearAllProgress,
-            icon: widget.clearAllIcon ?? Icon(Icons.clear, color: Theme.of(context).dividerColor),
-            onPressed: () => _controller.clear(),
-            visualDensity: VisualDensity.compact,
-          ),
-          */
-        ],
+                  ),
+              ],
+            );
+          }
+        ),
       ),
     );
   }
