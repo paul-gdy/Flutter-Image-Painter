@@ -63,15 +63,28 @@ class TextDialog extends StatelessWidget {
             onEditingComplete: onFinished,
           ),
           Align(
-            alignment: Alignment.bottomRight,
-            child: TextButton(
-              child: Text(
-                textDelegate.done,
-                style: TextStyle(
-                  color: Theme.of(context).primaryColorLight,
+            alignment: Alignment.bottomLeft,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                TextButton(
+                  child: Text(
+                    textDelegate.cancel,
+                    style: TextStyle(
+                      color: Theme.of(context).primaryColorLight,
+                    ),
+                  ),
+                  onPressed: Navigator.of(context).pop,
+                ),TextButton(
+                  child: Text(
+                    textDelegate.done,
+                    style: TextStyle(
+                      color: Theme.of(context).primaryColorLight,
+                    ),
+                  ),
+                  onPressed: onFinished,
                 ),
-              ),
-              onPressed: onFinished,
+              ],
             ),
           ),
         ],

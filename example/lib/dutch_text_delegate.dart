@@ -54,4 +54,7 @@ class DutchTextDelegate implements TextDelegate {
 
   @override
   final String open = "Open";
+
+  @override
+  final String cancel = "Cancel";
 }

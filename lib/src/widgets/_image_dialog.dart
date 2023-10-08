@@ -96,15 +96,29 @@ class _ImageDialogState extends State<ImageDialog> {
               ),
               const SizedBox(height: 40.0),
               Align(
-                alignment: Alignment.bottomRight,
-                child: TextButton(
-                  child: Text(
-                    widget.textDelegate.done,
-                    style: TextStyle(
-                      color: Theme.of(context).primaryColorLight,
+                alignment: Alignment.bottomLeft,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    TextButton(
+                      child: Text(
+                        widget.textDelegate.cancel,
+                        style: TextStyle(
+                          color: Theme.of(context).primaryColorLight,
+                        ),
+                      ),
+                      onPressed: Navigator.of(context).pop,
                     ),
-                  ),
-                  onPressed: () => widget.onFinished(_image, (_size * widget.refWidth / constraints.maxWidth).round()),
+                    TextButton(
+                      child: Text(
+                        widget.textDelegate.done,
+                        style: TextStyle(
+                          color: Theme.of(context).primaryColorLight,
+                        ),
+                      ),
+                      onPressed: () => widget.onFinished(_image, (_size * widget.refWidth / constraints.maxWidth).round()),
+                    ),
+                  ],
                 ),
               ),
             ],

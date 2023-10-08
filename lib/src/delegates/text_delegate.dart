@@ -17,4 +17,5 @@ class TextDelegate {
   final String fill = "Fill";
   final String save = "Save";
   final String open = "Open";
+  final String cancel = "Cancel";
 }
